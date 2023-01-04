@@ -27,6 +27,7 @@ public class NPC : MonoBehaviour
         {
             Debug.Log("Player entered trigger");
             DialogueManager.GetInstance().StartDialogue(grannyDialogue);
+
         }
 
     }
