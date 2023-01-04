@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using static UnityEngine.InputSystem.InputAction;
 
 public class DialogueManager : MonoBehaviour
 {
@@ -13,10 +14,9 @@ public class DialogueManager : MonoBehaviour
     private static DialogueManager instance;
     private bool DialogueActive = false;
 
-    private 
+    public InputAction dialogueAction;
 
-    // Start is called before the first frame update
-    void Start()
+    private void Awake()
     {
         if (instance == null)
         {
@@ -26,20 +26,33 @@ public class DialogueManager : MonoBehaviour
         {
             Destroy(gameObject);
         }
+
+        dialogueAction.performed += DialogueAction;
+    }
+
+    // Start is called before the first frame update
+    void Start()
+    {
+
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (!DialogueActive)
-        {
-            return;
-        }
-
         
     }
 
-    DialogueManager GetInstance()
+    private void OnEnable()
+    {
+        dialogueAction.Enable();
+    }
+
+    private void OnDisable()
+    {
+        dialogueAction.Disable();
+    }
+
+    public static DialogueManager GetInstance()
     {
         return instance;
     }
@@ -58,6 +71,14 @@ public class DialogueManager : MonoBehaviour
     public void DisplayNextSentence()
     {
         dialogueText.text = "Next Sentence";
+    }
+
+    public void DialogueAction(CallbackContext ctx)
+    {
+        if (DialogueActive)
+        {
+            DisplayNextSentence();
+        }
     }
 
 }

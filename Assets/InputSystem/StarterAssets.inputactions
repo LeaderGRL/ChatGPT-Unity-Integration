@@ -42,7 +42,7 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "Interact",
+                    "name": "DialogueAction",
                     "type": "Button",
                     "id": "6be6dcab-8f3a-45a6-af73-6c3ecc1e9860",
                     "expectedControlType": "Button",
@@ -235,7 +235,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "KeyboardMouse",
-                    "action": "Interact",
+                    "action": "DialogueAction",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
