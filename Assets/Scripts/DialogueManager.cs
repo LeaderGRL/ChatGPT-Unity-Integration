@@ -92,7 +92,8 @@ public class DialogueManager : MonoBehaviour
         if (DialogueActive)
         {
             Debug.Log("Dialogue Action");
-            DisplayNextSentence();
+            ClientChatGPT.GetInstance().ReadContext(EventSystem.current.currentSelectedGameObject.GetComponentInChildren<TextMeshProUGUI>().text);
+            //DisplayNextSentence();
         }
     }
     
@@ -101,7 +102,7 @@ public class DialogueManager : MonoBehaviour
         for (int i = 0; i < choices.Length; i++)
         {
             this.choices[i].SetActive(true);
-            choicesText[i].text = text[i];
+            choicesText[i].text = text[i+1];
         }
 
         Debug.Log(choices.Length);

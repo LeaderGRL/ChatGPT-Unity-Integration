@@ -6,33 +6,50 @@ using UnityEngine;
 public class ClientChatGPT : MonoBehaviour
 {
     private static ClientChatGPT Instance;
+
+    private UdpClient client;
     private string ask;
     private string answer;
+    string[] lines;
     private string NPCAnswer;
     private string[] choices;
+
     void Start()
     {
         if (Instance == null)
         {
             Instance = this;
             DontDestroyOnLoad(gameObject);
+            newConnection();
         }
         else
         {
             Destroy(gameObject);
         }
+        client = new UdpClient(5600);
     }
 
     public static ClientChatGPT GetInstance()
     {
         return Instance;
     }
-    void UDPConnection()
+
+    void newConnection()
     {
-        UdpClient client = new UdpClient(5600);
+        client = new UdpClient(5600);
         try
         {
             client.Connect("127.0.0.1", 5500);
+        }
+        catch (Exception e)
+        {
+            Debug.Log(e.ToString());
+        }
+    }
+    void send()
+    {
+        try
+        {
             byte[] sendBytes = Encoding.ASCII.GetBytes(ask);
             client.Send(sendBytes, sendBytes.Length);
             IPEndPoint remoteEndPoint = new IPEndPoint(IPAddress.Any, 5500);
@@ -41,6 +58,7 @@ public class ClientChatGPT : MonoBehaviour
             print("Message received from the server \n " + receivedString);
 
             answer = receivedString;
+            lines = answer.Split('\n');
             SetNPCAnswer();
             SetChoices();
         }
@@ -53,7 +71,7 @@ public class ClientChatGPT : MonoBehaviour
     public void ReadContext(string s)
     {
         ask = s;
-        UDPConnection();
+        send();
     }
 
     public string GetAnswer()
@@ -63,7 +81,9 @@ public class ClientChatGPT : MonoBehaviour
 
     private void SetNPCAnswer()
     {
-       NPCAnswer = GetAnswer().Split(':')[1].Trim();
+        int colonIndex = lines[0].IndexOf(':');
+        NPCAnswer = lines[0].Substring(colonIndex + 1).Trim().Replace("\"", "");
+        //NPCAnswer = GetAnswer().Split(':')[1].Trim();
     }
 
     public string GetNPCAnswer()
@@ -74,7 +94,14 @@ public class ClientChatGPT : MonoBehaviour
 
     private void SetChoices()
     {
-        GetAnswer().Split(':').CopyTo(choices, 2);
+        //GetAnswer().Split(':');
+        choices = new string[lines.Length - 1];
+        for (int i = 1; i < lines.Length; i++)
+        {
+            int colonIndex = lines[i].IndexOf(':');
+            choices[i - 1] = lines[i].Substring(colonIndex + 1).Trim().Replace("\"", "");
+        }
+        Debug.Log("Choices: " + choices);
     }
 
     public string[] GetChoices()
